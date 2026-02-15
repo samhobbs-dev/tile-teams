@@ -18,6 +18,24 @@ const TeamService = {
       }
     }
   },
+  async getTeamByCloseName(teamName: string) {
+    console.log('Team name from teamService:',teamName);
+    try {
+      const { data: resp } = await axios.get<TeamResponse>(
+        "/api/teamname/" + teamName
+      );
+      console.log(resp);
+      return resp;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.log("error message: ", error.message);
+        return error.message;
+      } else {
+        console.log("unexpected error: ", error);
+        return "An unexpected error occurred";
+      }
+    }
+  },
   createTeams(teamResp: TeamResponse[]) {
     const teams: Team[] = [];
     teamResp.forEach((t) => {

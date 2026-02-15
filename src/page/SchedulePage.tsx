@@ -19,6 +19,7 @@ import { Conference } from "@/type/conference";
 import RecordService from "@/api/recordService";
 import RankingService from "@/api/rankingService";
 import Ranking from "@/type/ranking";
+import LiveScores from "@/component/LiveScores";
 
 interface MyProps {
   year: string;
@@ -91,6 +92,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
         minHeight: "100vh",
       }}
     >
+    <LiveScores/>
       {(!isDesktopWidth || !isDesktopHeight) && (
         <Typography>Tap a team to view its schedule.</Typography>
       )}
