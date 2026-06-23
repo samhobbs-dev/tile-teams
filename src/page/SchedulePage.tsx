@@ -92,7 +92,9 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
         minHeight: "100vh",
       }}
     >
-    <LiveScores/>
+
+      {/* Only display the live scores if you're on the current year */}
+      {currentYear == 2025 && <LiveScores/>}
       {(!isDesktopWidth || !isDesktopHeight) && (
         <Typography>Tap a team to view its schedule.</Typography>
       )}
