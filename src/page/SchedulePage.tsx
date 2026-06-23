@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import TeamService from "../api/teamService";
 import { setTeamList } from "../store/teamListSlice";
 import { Team } from "../type/team";
-import { FIRST_YEAR, desktopHeight, desktopWidth } from "../const/const";
+import { CURRENT_YEAR, FIRST_YEAR, desktopHeight, desktopWidth } from "../const/const";
 
 import { useRouter } from "next/navigation";
 import { Conference } from "@/type/conference";
@@ -36,7 +36,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   const dispatch = useAppDispatch();
 
   const currentYear: number = parseInt(year, 10);
-  const isValidYear = currentYear >= FIRST_YEAR && currentYear < 2025;
+  const isValidYear = currentYear >= FIRST_YEAR && currentYear < 2026;
   const isTeam: boolean = teamId !== NO_TEAM;
 
   const [conferences, setConferences] = useState<Conference[]>([]);
@@ -94,7 +94,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
     >
 
       {/* Only display the live scores if you're on the current year */}
-      {currentYear == 2025 && <LiveScores/>}
+      {currentYear == CURRENT_YEAR && <LiveScores/>}
       {(!isDesktopWidth || !isDesktopHeight) && (
         <Typography>Tap a team to view its schedule.</Typography>
       )}

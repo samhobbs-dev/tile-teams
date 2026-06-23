@@ -14,7 +14,7 @@ import {
   useSearchParams,
 } from "next/navigation";
 import { useState, useEffect } from "react";
-import { FIRST_YEAR } from "@/const/const";
+import { CURRENT_YEAR, FIRST_YEAR } from "@/const/const";
 
 // TODO resolve potential undefined URL or other screwery
 export default function Home() {
@@ -28,8 +28,8 @@ export default function Home() {
     // Validate yearFromPath
     const parsedYear = parseInt(yearFromPath, 10);
     const isValidYear =
-      !isNaN(parsedYear) && parsedYear >= FIRST_YEAR && parsedYear < 2025;
-    setYear(isValidYear ? yearFromPath : "2024"); // Use the provided year if valid, otherwise default to 2022
+      !isNaN(parsedYear) && parsedYear >= FIRST_YEAR && parsedYear < 2026;
+    setYear(isValidYear ? yearFromPath : CURRENT_YEAR.toString()); // Use the provided year if valid, otherwise default to 2025
   }, [pathname]);
 
   if (year === null) {
