@@ -104,8 +104,8 @@ const fetchTeamId = async (teamName: string) => {
   if (result !== undefined)
     teamName = result;
   else {
-    teamName = teamName.replace(/\./g,'');
-    teamName = teamName.replace(/St/g, "State"); // Replace St. with State to fit my db  
+    teamName = teamName.replace(/\./g, "");
+    teamName = teamName.replace(/\bSt\b/g, "State"); // Replace St. with State to fit my db  
   }
   let teamResponse = await TeamService.getTeamByCloseName(teamName) as TeamResponse;
   if (teamResponse == null)

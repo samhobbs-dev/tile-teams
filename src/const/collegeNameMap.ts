@@ -12,8 +12,5 @@ export const collegeNameMap = new Map<string, string>([
     ["Ga. Southern", "Georgia Southern"],
     ["Southern California", "USC"],
     ["South Fla.", "South Florida"],
-    ["Western Mich.", "Western Michigan"],
-    ["NC St", "North Carolina State"],
-    ["NC St.", "North Carolina State"],
-    ["NC State", "North Carolina State"],
+    ["Western Mich.", "Western Michigan"]
 ]);
