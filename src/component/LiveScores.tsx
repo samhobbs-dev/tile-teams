@@ -11,6 +11,7 @@ import useWindowSize from "../hook/useWindowSize"; // Assuming this hook exists
 import TeamService from "@/api/teamService";
 import { TeamResponse } from "@/type/team";
 import { collegeNameMap } from "@/const/collegeNameMap";
+import Grid from "@mui/material/Unstable_Grid2";
 
 interface LiveGameScore {
   id: number;
@@ -41,12 +42,12 @@ interface NCAAGameJSON {
 }
 
 // Constants for styling
-const gameBoxSize = 125; // To make the game box a square
-const logoHeight = 40;
-const scoreFontSize = 24;
-const statusFontSize = 14;
+const gameBoxSize = 100; // To make the game box a square
+const logoHeight = gameBoxSize / 3; // Dynamic sizing
+const scoreFontSize = gameBoxSize / 5;
+const statusFontSize = gameBoxSize / (100 / 12);
 const arrowWidth = 40;
-const scrollAmount = gameBoxSize * 3 + 30; // Scroll by roughly 3 boxes + spacing
+const scrollAmount = gameBoxSize * 5 + 30; // Scroll by roughly 3 boxes + spacing
 
 // Placeholder function for API call - to be replaced by the user
 const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
@@ -155,10 +156,10 @@ const LiveScores: React.FC = () => {
   
     return (
     <Stack 
-    direction="row" 
-    alignItems="center" 
-    spacing={1}
-    sx={{ width: "90%", overflow: "hidden" }}
+      direction="row" 
+      alignItems="center" 
+      spacing={1}
+      sx={{ width: "90%", overflow: "hidden" }}
     >
         {/* 1. Sideways Title Box */}
       <Box flexShrink={0}>
@@ -180,7 +181,7 @@ const LiveScores: React.FC = () => {
               fontWeight: 'bold',
             }}
           >
-            🏈 Live Scores
+            Live Scores
           </Typography>
         </Paper>
       </Box>
@@ -215,79 +216,105 @@ const LiveScores: React.FC = () => {
     ) : (
         <Stack direction="row" spacing={1} flexWrap="nowrap">
         {liveGames.map((game) => (
-            <Paper 
-            key={game.id} 
+          <Paper
+            key={game.id}
             elevation={3}
             sx={{
-                minWidth: gameBoxSize,
-                height: gameBoxSize,
-                p: 1,
-                backgroundColor: 'white',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                flexShrink: 0,
+              width: gameBoxSize,
+              height: gameBoxSize,
+              p: 1,
+              backgroundColor: 'white',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              flexShrink: 0,
             }}
+          >
+            <Grid
+              container
+              rowSpacing={.5}
+              columnSpacing={1}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
             >
-
-            {/* Away Team Row */}
-            <Stack 
-                direction="row" 
-                alignItems="center" 
-                justifyContent="space-between"
-                // aligntContent="center"
-                width="80%"
-            >
-              {game.awayTeamId ? 
-                <TeamLogo 
-                teamId={game.awayTeamId} 
-                maxHeight={logoHeight} 
-                xy 
-                isSchedule 
-                fontSize={statusFontSize} 
-                />
-                : game.awayTeamName
-              }
+              {/* Away team icon*/}
+              <Grid
+                xs={6}
+                height="30px" // Also shifts the score
+                display={"flex"}
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                {game.awayTeamId ? (
+                    <TeamLogo
+                      teamId={game.awayTeamId}
+                      maxHeight={logoHeight}
+                      xy
+                      isSchedule
+                      fontSize={statusFontSize}
+                    />
+                  ) : (
+                    game.awayTeamName
+                  )}
+              </Grid>
+              {/* Away team score */}
+              <Grid 
+                xs={6}
+                display={"flex"}
+                justifyContent={"center"}
+              >
                 <Typography variant="h6" sx={{ fontSize: scoreFontSize }}>
-                {game.awayTeamScore}
+                  {game.awayTeamScore}
                 </Typography>
-            </Stack>
-
-            {/* Home Team Row */}
-            <Stack 
-                direction="row" 
-                alignItems="center" 
-                justifyContent="space-between"
-            >
-              {game.homeTeamId ?
-                <TeamLogo 
-                teamId={game.homeTeamId} 
-                maxHeight={logoHeight} 
-                xy 
-                isSchedule 
-                fontSize={statusFontSize} 
-                />
-                : game.homeTeamName
-              }  
+              </Grid>
+              {/* Home team icon*/}
+              <Grid
+                xs={6}
+                display={"flex"}
+                height="30px" // Also shifts the score
+                justifyContent={"center"}
+                alignItems={"center"}
+              >
+                {game.homeTeamId ? (
+                  <TeamLogo
+                    teamId={game.homeTeamId}
+                    maxHeight={logoHeight}
+                    xy
+                    isSchedule
+                    fontSize={statusFontSize}
+                  />
+                ) : (
+                  game.awayTeamName
+                )}
+              </Grid>
+              {/* Home team score */}
+              <Grid
+                xs={6}
+                display={"flex"}
+                justifyContent={"center"}
+              >
                 <Typography variant="h6" sx={{ fontSize: scoreFontSize }}>
-                {game.homeTeamScore}
+                    {game.homeTeamScore}
+                  </Typography>
+              </Grid>
+              <Grid
+                xs={6}
+              >
+                <Typography
+                  align="center"
+                  variant="subtitle2"
+                  sx={{
+                    color: getStatusColor(game.gameStatus),
+                    fontWeight: 'bold',
+                    fontSize: statusFontSize,
+                  }}
+                >
+                  {game.gameStatus}
                 </Typography>
-            </Stack>
-
-            {/* Game Status */}
-            <Typography 
-                align="center" 
-                variant="subtitle2" 
-                sx={{ 
-                color: getStatusColor(game.gameStatus),
-                fontWeight: 'bold',
-                fontSize: statusFontSize,
-                }}
-            >
-                {game.gameStatus}
-            </Typography>
-
-            </Paper>
+              </Grid>
+            </Grid>            
+          </Paper>
         ))}
         </Stack>
     )}
