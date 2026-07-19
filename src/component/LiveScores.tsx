@@ -1,21 +1,22 @@
 "use client";
 
-/* eslint-disable react/prop-types */
-import { Box, CircularProgress, IconButton, Paper, Stack, Typography } from "@mui/material";
+ 
+import { 
+  Box, CircularProgress, IconButton, Paper, Stack, Typography
+} from "@mui/material";
 import React, { useEffect, useState, useRef } from "react";
 // Assuming TeamLogo is available in the component directory
 import TeamLogo from "./TeamLogo";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import useWindowSize from "../hook/useWindowSize"; // Assuming this hook exists
 import TeamService from "@/api/teamService";
 import { TeamResponse } from "@/type/team";
 import { collegeNameMap } from "@/const/collegeNameMap";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 
 interface LiveGameScore {
   id: number;
-  homeTeamName: string;   // use string since the API uses strings like "JAX ST"
+  homeTeamName: string;   // use string since API uses strings like "JAX ST"
   awayTeamName: string;
   homeTeamId: number | null;  // nulls if the checking the id in the db failed
   awayTeamId: number | null;
@@ -47,7 +48,7 @@ const logoHeight = gameBoxSize / 3; // Dynamic sizing
 const scoreFontSize = gameBoxSize / 5;
 const statusFontSize = gameBoxSize / (100 / 12);
 const arrowWidth = 40;
-const scrollAmount = gameBoxSize * 5 + 30; // Scroll by roughly 3 boxes + spacing
+const scrollAmount = gameBoxSize * 5 + 30; // Scroll by ~3 boxes + spacing
 
 // Placeholder function for API call - to be replaced by the user
 const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
@@ -56,17 +57,14 @@ const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
 
     const data: NCAAGameJSON = await res.json();
 
-    // Get unique team names from NCAA data
-    const teamNames = Array.from(
-      new Set(
-        data.games.flatMap(({ game }) => [game.home.names.full, game.away.names.full])
-      )
-    );
-
     const liveScores: LiveGameScore[] = await Promise.all(
       data.games.map(async ({ game }) => {
         const homeTeamId = await fetchTeamId(game.home.names.short);
         const awayTeamId = await fetchTeamId(game.away.names.short);
+        const gameStatus =
+          game.gameState === "pre"
+            ? "Pre-Game"
+            : game.currentPeriod || game.gameState || "Pre-Game";
 
         return {
           id: Number(game.gameID),
@@ -76,7 +74,7 @@ const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
           awayTeamId,   // now this is number | null
           homeTeamScore: Number(game.home.score || 0),
           awayTeamScore: Number(game.away.score || 0),
-          gameStatus: game.gameState === "pre" ? "Pre-Game" : (game.currentPeriod || game.gameState || "Pre-Game")
+          gameStatus,
         };
       })
     );
@@ -104,10 +102,11 @@ const fetchTeamId = async (teamName: string) => {
   if (result !== undefined)
     teamName = result;
   else {
+    // Replace St. with State to fit my db  
     teamName = teamName.replace(/\./g, "");
-    teamName = teamName.replace(/\bSt\b/g, "State"); // Replace St. with State to fit my db  
+    teamName = teamName.replace(/\bSt\b/g, "State");
   }
-  let teamResponse = await TeamService.getTeamByCloseName(teamName) as TeamResponse;
+  const teamResponse = await TeamService.getTeamByCloseName(teamName) as TeamResponse;
   if (teamResponse == null)
     return null;
   return teamResponse.id;
@@ -119,20 +118,28 @@ const LiveScores: React.FC = () => {
     const gamesContainerRef = useRef<HTMLDivElement>(null);
   
     useEffect(() => {
-      setLoading(true);
-      // User will replace this with actual API call
+      let ignore = false;
+    
       fetchLiveScores()
         .then((data) => {
-          setLiveGames(data);
-          setLoading(false);
+          if (!ignore) {
+            setLiveGames(data);
+            setLoading(false);
+          }
         })
         .catch((error) => {
-          console.error("Error fetching live scores:", error);
-          setLoading(false);
+          if (!ignore) {
+            console.error("Error fetching live scores:", error);
+            setLoading(false);
+          }
         });
+    
+      return () => {
+        ignore = true;
+      };
     }, []);
   
-    // Utility to determine the color of the game status (e.g., in-progress vs final)
+    // Determine the color of the game status (e.g., in-progress vs final)
     const getStatusColor = (status: string) => {
       if (status.toLowerCase().includes("final")) return "red";
       if (status.toLowerCase().includes("pre-game")) return "gray";
@@ -143,14 +150,18 @@ const LiveScores: React.FC = () => {
     const scrollLeft = () => {
       if (gamesContainerRef.current) {
         // Moves the scroll position to the left by the calculated amount
-        gamesContainerRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        gamesContainerRef.current.scrollBy(
+          { left: -scrollAmount, behavior: 'smooth' }
+        );
       }
     };
     
     const scrollRight = () => {
       if (gamesContainerRef.current) {
         // Moves the scroll position to the right by the calculated amount
-        gamesContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        gamesContainerRef.current.scrollBy(
+          { left: scrollAmount, behavior: 'smooth' }
+        );
       }
     };
   
@@ -161,11 +172,11 @@ const LiveScores: React.FC = () => {
       spacing={1}
       sx={{ width: "90%", overflow: "hidden" }}
     >
-        {/* 1. Sideways Title Box */}
+      {/* Sideways Title Box */}
       <Box flexShrink={0}>
         <Paper elevation={5} sx={{ 
           p: 1, 
-          height: gameBoxSize * 1.2, // Arbitrary height to fit the whole box for visual balance
+          height: gameBoxSize * 1.2,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -194,24 +205,32 @@ const LiveScores: React.FC = () => {
 
     {/* Scrollable Container */}
     <Box
-    ref={gamesContainerRef}
-    sx={{
-        overflowX: "auto",
-        p: 1,
-        flexGrow: 1,
-        flexShrink: 1,          // prevent pushing right arrow off screen
-        maxWidth: "100%",       // ensures container fits between arrows
-        maxHeight: gameBoxSize + 30,
-        display: "flex",
-        alignItems: "center",
-        '&::-webkit-scrollbar': { display: 'none' },
-        msOverflowStyle: 'none',
-        scrollbarWidth: 'none',
-    }}
+      ref={gamesContainerRef}
+      sx={{
+          overflowX: "auto",
+          p: 1,
+          flexGrow: 1,
+          flexShrink: 1,          // prevent pushing right arrow off screen
+          maxWidth: "100%",       // ensures container fits between arrows
+          maxHeight: gameBoxSize + 30,
+          display: "flex",
+          alignItems: "center",
+          '&::-webkit-scrollbar': { display: 'none' },
+          msOverflowStyle: 'none',
+          scrollbarWidth: 'none',
+      }}
     >
     {loading ? (
-        <Box sx={{ minWidth: gameBoxSize, height: gameBoxSize, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <CircularProgress />
+        <Box 
+          sx={{ 
+            minWidth: gameBoxSize,
+            height: gameBoxSize,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          <CircularProgress />
         </Box>
     ) : (
         <Stack direction="row" spacing={1} flexWrap="nowrap">
@@ -240,7 +259,7 @@ const LiveScores: React.FC = () => {
             >
               {/* Away team icon*/}
               <Grid
-                xs={6}
+                size={6}
                 height="30px" // Also shifts the score
                 display={"flex"}
                 justifyContent={"center"}
@@ -250,8 +269,6 @@ const LiveScores: React.FC = () => {
                     <TeamLogo
                       teamId={game.awayTeamId}
                       maxHeight={logoHeight}
-                      xy
-                      isSchedule
                       fontSize={statusFontSize}
                     />
                   ) : (
@@ -260,7 +277,7 @@ const LiveScores: React.FC = () => {
               </Grid>
               {/* Away team score */}
               <Grid 
-                xs={6}
+                size={6}
                 display={"flex"}
                 justifyContent={"center"}
               >
@@ -270,7 +287,7 @@ const LiveScores: React.FC = () => {
               </Grid>
               {/* Home team icon*/}
               <Grid
-                xs={6}
+                size={6}
                 display={"flex"}
                 height="30px" // Also shifts the score
                 justifyContent={"center"}
@@ -280,8 +297,6 @@ const LiveScores: React.FC = () => {
                   <TeamLogo
                     teamId={game.homeTeamId}
                     maxHeight={logoHeight}
-                    xy
-                    isSchedule
                     fontSize={statusFontSize}
                   />
                 ) : (
@@ -290,7 +305,7 @@ const LiveScores: React.FC = () => {
               </Grid>
               {/* Home team score */}
               <Grid
-                xs={6}
+                size={6}
                 display={"flex"}
                 justifyContent={"center"}
               >
@@ -299,7 +314,7 @@ const LiveScores: React.FC = () => {
                   </Typography>
               </Grid>
               <Grid
-                xs={6}
+                size={6}
               >
                 <Typography
                   align="center"

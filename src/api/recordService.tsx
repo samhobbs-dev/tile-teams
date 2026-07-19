@@ -1,4 +1,3 @@
-/* eslint-disable eqeqeq */
 import axios from "axios";
 import { ConfDivision, Conference } from "../type/conference";
 import { RecordResponse, SeasonRecord } from "../type/record";
@@ -12,7 +11,8 @@ const RecordService = {
       confList: Conference[]
     ) => {
       for (let i = 0; i < confList.length; i++)
-        if (sr.conference === confList[i].name) return i;
+        if (sr.conference === confList[i].name)
+          return i;
       return -1;
     };
 
@@ -21,10 +21,11 @@ const RecordService = {
       divList: ConfDivision[]
     ) => {
       for (let i = 0; i < divList.length; i++)
-        if (sr.division === divList[i].name) return i;
+        if (sr.division === divList[i].name)
+          return i;
       return -1;
     };
-    // Get all team records, organize everything into conferences & divisons, & sort
+    // Get all team records, organize into conferences & divisons, & sort
     try {
       const { data: resp } = await axios.get<RecordResponse[]>(
         "/api/record/" + year
@@ -72,7 +73,7 @@ const RecordService = {
             conferenceList[confIndex].divisions
           )) === -1
         ) {
-          // If team is of existing conference but non-existing division, add division
+          // If team is in division that doesn't exist yet, add it
           const newDiv: ConfDivision = {
             name: sr.division,
             teams: new Array(sr),

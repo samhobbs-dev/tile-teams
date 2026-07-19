@@ -1,5 +1,5 @@
 "use client";
-/* eslint-disable react/prop-types */
+ 
 import { Box, CircularProgress, Modal, Paper, Stack } from "@mui/material";
 import { useAppDispatch } from "../store/hooks";
 import { setScheduleTeamId } from "../store/currentScheduleSlice";
@@ -9,7 +9,7 @@ import useWindowSize from "../hook/useWindowSize";
 import { useState } from "react";
 import CloseIcon from "@mui/icons-material/Close";
 import TeamSchedule from "./TeamSchedule";
-import { desktopHeight, desktopWidth, zoomWidth } from "../const/const";
+import { desktopHeight, desktopWidth } from "../const/const";
 
 interface MyProps {
   record: SeasonRecord;
@@ -113,7 +113,7 @@ const TeamRecord: React.FC<MyProps> = ({
             alignItems: "center",
           }}
         >
-          <TeamLogo teamId={record.team.id} xy maxHeight={logoHeight} />
+          <TeamLogo teamId={record.team.id} maxHeight={logoHeight} />
         </Box>
         <Box
           sx={{

@@ -7,7 +7,7 @@ const RankingService = {
       const { data: resp } = await axios.get<RankingResponse[]>(
         "/api/ranking/" + year
       );
-      let rankings: Ranking[] = [];
+      const rankings: Ranking[] = [];
       resp.forEach((r) => {
         rankings.push(this.createRanking(r));
       });
@@ -23,7 +23,7 @@ const RankingService = {
     }
   },
   createRanking(r: RankingResponse) {
-    let ranking: Ranking = {
+    const ranking: Ranking = {
       id: r.id,
       teamId: r.team_id,
       year: r.year,

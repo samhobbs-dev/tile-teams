@@ -1,8 +1,5 @@
-import { RecordResponse } from "@/type/record";
-import { PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { RankingResponse } from "@/type/ranking";
 
 export async function GET(
   request: NextRequest,
@@ -10,7 +7,7 @@ export async function GET(
 ) {
   const { year } = await params;
   try {
-    const rankings: any = await prisma.rankings.findMany({
+    const rankings = await prisma.rankings.findMany({
       where: {
         year: parseInt(year),
         postseason: 1,
@@ -30,7 +27,8 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: `Failed to fetch rankings for year ${year}. ${error instanceof Error ? error.message : "Unknown error"}`,
+        error: `Failed to fetch rankings for year ${year}. 
+          ${error instanceof Error ? error.message : "Unknown error"}`,
       },
       { status: 500 }
     );

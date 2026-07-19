@@ -1,11 +1,10 @@
 "use client";
-/* eslint-disable react/prop-types */
+ 
 import { Box, CircularProgress, Paper, Stack } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import { useEffect, useState } from "react";
 import GameService from "../api/gameService";
 import GameStatus from "../type/gameStatus";
-import TeamGame from "../type/teamGame";
 import TeamLogo from "./TeamLogo";
 import TeamScheduleHeader from "./TeamScheduleHeader";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
@@ -17,39 +16,41 @@ interface MyProps {
   teamId: number;
   year: number;
 }
-
-// const height = 65;
 const width = 180;
 
 const TeamSchedule: React.FC<MyProps> = ({ teamId, year }) => {
   const windowSize = useWindowSize();
   const windowHeight = windowSize.height;
 
-  const [games, setGames] = useState<TeamGame[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useAppDispatch();
-  const schedules = useAppSelector((state) => state.scheduleList.yearSchedules);
+  const schedules = useAppSelector(
+    (state) => state.scheduleList.yearSchedules
+  );
+  const games = schedules.find((s) => s.teamId === teamId)?.games ?? [];
+
   const DEFAULT = 50;
   let logoHeight = DEFAULT; // Default value
-  if (games.length > 0) logoHeight = (windowHeight - 80) / games.length;
-  if (logoHeight > DEFAULT) logoHeight = DEFAULT;
-  let fontSize = 17;
+  if (games.length > 0) 
+    logoHeight = (windowHeight - 80) / games.length;
+  if (logoHeight > DEFAULT) 
+    logoHeight = DEFAULT;
+  const fontSize = 17;
 
   // Update schedule list whenever year changes
   // TODO find way to have only one call on page load
   useEffect(() => {
-    setLoading(true);
+    let ignore = false;  
     GameService.getAllTeamSchedules(year).then((response) => {
-      dispatch(setTeamSchedules(response as Schedule[]));
-      setLoading(false);
-    });
+      if (!ignore) {
+        dispatch(setTeamSchedules(response as Schedule[]));
+        setLoading(false);
+      }
+    });  
+    return () => {
+      ignore = true;
+    };
   }, [dispatch, year]);
-
-  useEffect(() => {
-    const schedule = schedules.find((s) => s.teamId === teamId);
-    // TODO test this undefined check
-    if (schedule !== undefined) setGames(schedule.games);
-  }, [schedules, teamId]);
 
   const getGameStatusColor = (gameStatus: GameStatus) => {
     switch (gameStatus) {
@@ -66,7 +67,7 @@ const TeamSchedule: React.FC<MyProps> = ({ teamId, year }) => {
     <Box width={width}>
       <Paper elevation={5} sx={{ position: "sticky", top: 0 }}>
         <Box height={50} width={width}>
-          <TeamScheduleHeader teamId={teamId} year={year} />
+          <TeamScheduleHeader teamId={teamId} />
         </Box>
         {loading ? (
           <Paper
@@ -93,21 +94,19 @@ const TeamSchedule: React.FC<MyProps> = ({ teamId, year }) => {
                 width="100%"
                 height="100%"
               >
-                <Grid container xs={6} justifyContent="center">
+                <Grid container size={6} justifyContent="center">
                   <TeamLogo
                     teamId={game.opponentTeamId}
-                    maxHeight={logoHeight - 3}
-                    xy
-                    isSchedule
+                    maxHeight={logoHeight - 3}                   
                     fontSize={fontSize - 3}
                   />
                 </Grid>
-                <Grid xs={1} fontSize={{ fontSize }} alignItems="center">
+                <Grid size={1} fontSize={{ fontSize }} alignItems="center">
                   <b style={{ color: getGameStatusColor(game.gameStatus) }}>
                     {game.gameStatus}
                   </b>
                 </Grid>
-                <Grid xs={5} fontSize={{ fontSize }}>
+                <Grid size={5} fontSize={{ fontSize }}>
                   {" " + game.teamPoints + " - " + game.opponentTeamPoints}
                 </Grid>
               </Grid>

@@ -24,5 +24,6 @@ const currentScheduleSlice = createSlice({
 });
 
 export const { setScheduleTeamId } = currentScheduleSlice.actions;
-export const selectScheduleTeamId = (state: RootState) => state.schedule.teamId;
+export const selectScheduleTeamId = 
+  (state: RootState) => state.schedule.teamId;
 export default currentScheduleSlice.reducer;

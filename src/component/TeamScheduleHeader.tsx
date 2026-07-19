@@ -1,23 +1,16 @@
 "use client";
-/* eslint-disable react/prop-types */
-import { useState, useEffect } from "react";
 import { Typography } from "@mui/material";
 import { useAppSelector } from "../store/hooks";
 
 interface MyProps {
   teamId: number;
-  year: number;
 }
 
 // Appears above team's schedule on left of page
-const TeamScheduleHeader: React.FC<MyProps> = ({ teamId, year }) => {
-  const [school, setSchool] = useState<string>("");
+const TeamScheduleHeader: React.FC<MyProps> = ({ teamId }) => {
   const teams = useAppSelector((state) => state.teamList.teamList);
-
-  useEffect(() => {
-    const team = teams.find((t) => t.id === teamId);
-    if (team !== undefined) setSchool(team.school);
-  }, [teams, teamId, year]);
+  const school = teams.find((t) => t.id === teamId)?.school ?? "";
+  
   return school !== "" ? (
     <>
       <Typography>{school}</Typography>

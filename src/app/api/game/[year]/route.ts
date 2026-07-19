@@ -1,7 +1,4 @@
-import { ScheduleResponse } from "@/type/schedule";
-import { TeamResponse } from "@/type/team";
 import { GameResponse } from "@/type/teamGame";
-import { Prisma, PrismaClient } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -27,7 +24,8 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: `Failed to fetch games for year ${year}. ${error instanceof Error ? error.message : "Unknown error"}`,
+        error: `Failed to fetch games for year ${year}. 
+          ${error instanceof Error ? error.message : "Unknown error"}`,
       },
       { status: 500 }
     );

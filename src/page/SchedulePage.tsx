@@ -1,6 +1,7 @@
 "use client";
 
-import { Box, CircularProgress, Paper, Stack, Typography } from "@mui/material";
+import { Box, CircularProgress, Paper, Stack, Typography } 
+from "@mui/material";
 import ConfGrid from "../component/ConfGrid";
 import ConfYear from "../component/ConfYear";
 import TeamSchedule from "../component/TeamSchedule";
@@ -12,7 +13,8 @@ import { useEffect, useState } from "react";
 import TeamService from "../api/teamService";
 import { setTeamList } from "../store/teamListSlice";
 import { Team } from "../type/team";
-import { CURRENT_YEAR, FIRST_YEAR, desktopHeight, desktopWidth } from "../const/const";
+import { CURRENT_YEAR, FIRST_YEAR, NEXT_YEAR, desktopHeight, desktopWidth } 
+from "../const/const";
 
 import { useRouter } from "next/navigation";
 import { Conference } from "@/type/conference";
@@ -36,7 +38,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   const dispatch = useAppDispatch();
 
   const currentYear: number = parseInt(year, 10);
-  const isValidYear = currentYear >= FIRST_YEAR && currentYear < 2026;
+  const isValidYear = currentYear >= FIRST_YEAR && currentYear < NEXT_YEAR;
   const isTeam: boolean = teamId !== NO_TEAM;
 
   const [conferences, setConferences] = useState<Conference[]>([]);
@@ -54,22 +56,28 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   }
 
   useEffect(() => {
-    // Update years once current year is changed
     if (isValidYear) {
-      setLoading(true);
+      let ignore = false;
+  
       Promise.all([
         RecordService.getAllConferenceStandings(currentYear),
         TeamService.getAllTeamsInYear(currentYear),
         RankingService.getFinalAPRankingsByYear(currentYear),
       ]).then(([confRes, teamRes, rankRes]) => {
-        const sortedConfs = (confRes as Conference[]).sort((a, b) =>
-          a.name.localeCompare(b.name)
-        );
-        setConferences(sortedConfs);
-        dispatch(setTeamList(teamRes as Team[]));
-        setRankings(rankRes as Ranking[]);
-        setLoading(false);
+        if (!ignore) {
+          const sortedConfs = (confRes as Conference[]).sort((a, b) =>
+            a.name.localeCompare(b.name)
+          );
+          setConferences(sortedConfs);
+          dispatch(setTeamList(teamRes as Team[]));
+          setRankings(rankRes as Ranking[]);
+          setLoading(false);
+        }
       });
+  
+      return () => {
+        ignore = true;
+      };
     }
   }, [currentYear, dispatch, isValidYear]);
   return isValidYear ? (
@@ -80,10 +88,11 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       paddingTop={1}
       paddingBottom={8}
       style={{
-        backgroundImage: `
-                    linear-gradient(rgba(211, 211, 211, 0.5), rgba(211, 211, 211, 0.5)),
-                    url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
-                    `,
+        backgroundImage:
+        `linear-gradient(rgba(211, 211, 211, 0.5),
+          rgba(211, 211, 211, 0.5)),
+          url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
+        `,
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "repeat-y",
@@ -125,7 +134,12 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
                 <TeamSchedule teamId={teamId} year={currentYear} />
               ) : (
                 <Stack justifyContent="space-between">
-                  <Stack position="sticky" height="105px" width="180px" top="0">
+                  <Stack 
+                    position="sticky"
+                    height="105px"
+                    width="180px"
+                    top="0"
+                  >
                     <Paper elevation={5}>
                       <Typography style={{ margin: 2, fontSize: 16 }}>
                         Hover over or tap a team to see their schedule.
@@ -143,7 +157,6 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
             justifyContent="center"
           >
             <ConfGrid
-              year={currentYear}
               conferences={conferences}
               loading={false}
             />
@@ -151,7 +164,6 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
           {isDesktopWidth && (
             <Box width="20%" display="flex" justifyContent="center">
               <Rankings
-                year={currentYear}
                 height={50}
                 width={120}
                 logoHeight={40}

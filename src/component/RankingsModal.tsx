@@ -1,7 +1,7 @@
 "use client";
-/* eslint-disable react/prop-types */
+ 
 import { Box, Button, Modal, Paper, Stack, Typography } from "@mui/material";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import CloseIcon from "@mui/icons-material/Close";
 import { useEffect, useState } from "react";
 import TeamLogo from "./TeamLogo";
@@ -94,10 +94,10 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
                       padding={1}
                       width={width}
                     >
-                      <Grid xs={3}>
+                      <Grid size={3}>
                         <Typography>#{r.ranking}</Typography>
                       </Grid>
-                      <Grid xs={9}>
+                      <Grid size={9}>
                         <Stack
                           alignItems="center"
                           alignContent="center"
@@ -105,9 +105,7 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
                         >
                           <TeamLogo
                             teamId={r.teamId}
-                            xy
-                            maxHeight={logoHeight}
-                            isSchedule
+                            maxHeight={logoHeight}                            
                             fontSize={14}
                           />
                         </Stack>

@@ -1,5 +1,5 @@
 import { TeamResponse } from "@/type/team";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
@@ -10,16 +10,19 @@ export async function GET(
   const { teamName } = await params;
   // currentLogo in TeamResponse is duplicate of logo
   try {
-    // console.log('hi');
-    // console.log("Incoming teamName:", JSON.stringify(teamName));
-    console.log("team name from api: ",teamName);
     // Assumes school name is unique (so [0])
     const result: TeamResponse[] = await prisma.$queryRaw(Prisma.sql`
-        select id, name_full as full_name, name_school as school, mascot, logo, current_logo
+        select 
+          id, 
+          name_full as full_name, 
+          name_school as school, 
+          mascot, 
+          logo, 
+          current_logo
         from teams t
         left join (
-        select team_id, image as logo, image as current_logo from logos
-        where team_id is not null and year_last is null 
+          select team_id, image as logo, image as current_logo from logos
+          where team_id is not null and year_last is null 
         ) as t2
         on t.id = t2.team_id
         where name_school = ${teamName}
@@ -35,7 +38,8 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: `Failed to fetch teams for team name ${teamName}. ${error instanceof Error ? error.message : "Unknown error"}`,
+        error: `Failed to fetch teams for team name ${teamName}. 
+          ${error instanceof Error ? error.message : "Unknown error"}`,
       },
       { status: 500 }
     );

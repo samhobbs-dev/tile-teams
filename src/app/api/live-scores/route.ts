@@ -10,7 +10,8 @@ export async function GET() {
     return NextResponse.json(data, {
       status: 200,
       headers: {
-        "Access-Control-Allow-Origin": "*", // optional if your frontend is on a different domain
+        // optional if your frontend is on a different domain
+        "Access-Control-Allow-Origin": "*",
       },
     });
   } catch (err) {

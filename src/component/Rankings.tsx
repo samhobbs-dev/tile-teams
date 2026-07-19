@@ -1,14 +1,13 @@
 "use client";
-/* eslint-disable react/prop-types */
+ 
 import { Box, Paper, Stack, Typography } from "@mui/material";
 import TeamLogo from "./TeamLogo";
 import Ranking from "../type/ranking";
-import Grid from "@mui/material/Unstable_Grid2";
+import Grid from "@mui/material/Grid2";
 import { useAppDispatch } from "../store/hooks";
 import { setScheduleTeamId } from "../store/currentScheduleSlice";
 
 interface MyProps {
-  year: number;
   height: number;
   width: number;
   logoHeight: number;
@@ -17,7 +16,6 @@ interface MyProps {
 
 // AP Rankings displayed right of ConfGrid
 const Rankings: React.FC<MyProps> = ({
-  year,
   height,
   width,
   logoHeight,
@@ -51,10 +49,10 @@ const Rankings: React.FC<MyProps> = ({
                     width={width}
                     onMouseEnter={() => dispatch(setScheduleTeamId(r.teamId))}
                   >
-                    <Grid xs={3}>
+                    <Grid size={3}>
                       <Typography>#{r.ranking}</Typography>
                     </Grid>
-                    <Grid xs={9}>
+                    <Grid size={9}>
                       <Stack
                         alignItems="center"
                         alignContent="center"
@@ -62,9 +60,7 @@ const Rankings: React.FC<MyProps> = ({
                       >
                         <TeamLogo
                           teamId={r.teamId}
-                          xy
-                          maxHeight={logoHeight}
-                          isSchedule
+                          maxHeight={logoHeight}                          
                           fontSize={14}
                         />
                       </Stack>

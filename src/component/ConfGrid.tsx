@@ -1,18 +1,15 @@
-"use client";
-
-/* eslint-disable react/prop-types */
-import Grid from "@mui/material/Unstable_Grid2";
+"use client"; 
+import Grid from "@mui/material/Grid2";
 import { Conference } from "../type/conference";
 import ConfStandings from "./ConfStandings";
 
 interface MyProps {
-  year: number;
   conferences: Conference[];
   loading: boolean;
 }
 
 // Contains all conference standings in grid
-const ConfGrid: React.FC<MyProps> = ({ year, conferences, loading }) => {
+const ConfGrid: React.FC<MyProps> = ({ conferences, loading }) => {
   return (
     <div>
       {/* Standings for every conference */}
