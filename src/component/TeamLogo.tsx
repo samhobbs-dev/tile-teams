@@ -44,30 +44,26 @@ const TeamLogo: React.FC<MyProps> = ({
     </div>
   ) : noImage === false ? (
     <div
+      className="relative"
       style={{
-        position: "relative",
         width: maxHeight,
         height: maxHeight,
       }}
     >
       <Image
+        className="object-contain"
         fill
         src={image}
         alt={`${school} logo`}
         title={school}
         sizes={`${maxHeight}px`}
-        style={{
-          objectFit: "contain",
-        }}
       />
     </div>
   ) : (
     <div>
-      {fontSize ? (
-        <b style={{ fontSize: fontSize, display: "flex" }}>{school}</b>
-      ) : (
-        <b style={{ display: "flex" }}>{school}</b>
-      )}
+      <b className="flex" style={fontSize ? { fontSize } : undefined}>
+        {school}
+      </b>
     </div>
   );
 };

@@ -29,8 +29,8 @@ const Rankings: React.FC<MyProps> = ({
       <Paper elevation={5}>
         {rankings.length > 0 ? (
           <Grid container justifyContent="center" direction="column">
-            <Grid style={{ width: width }}>
-              <Box style={{ height: "25px", width: width }}>
+            <Grid style={{ width }}>
+              <Box className="h-6.25" style={{ width }}>
                 <Typography>AP Ranking</Typography>
               </Box>
             </Grid>
@@ -39,7 +39,7 @@ const Rankings: React.FC<MyProps> = ({
                 <Stack
                   justifyContent="center"
                   direction="row"
-                  sx={{ height: height, width: width }}
+                  style={{ height, width }}
                 >
                   <Grid
                     container

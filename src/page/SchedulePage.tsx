@@ -85,20 +85,14 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       direction="column"
       alignItems="center"
       spacing={1}
-      paddingTop={1}
-      paddingBottom={8}
+      className="pt-2 pb-16 w-full min-h-screen 
+        bg-cover bg-center bg-repeat-y bg-fixed"
       style={{
         backgroundImage:
         `linear-gradient(rgba(211, 211, 211, 0.5),
           rgba(211, 211, 211, 0.5)),
           url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
-        `,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "repeat-y",
-        backgroundAttachment: "fixed",
-        width: "100%",
-        minHeight: "100vh",
+        `
       }}
     >
 
@@ -114,15 +108,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
         decrementYear={decrementYear}
       />
       {loading ? (
-        <Box
-          sx={{
-            flex: 1,
-            width: "100%",
-            height: "70vh", // Ensures there's vertical space to center within
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
+        <Box className="flex-1 w-full h-[70h] flex justify-center items-center"
         >
           <CircularProgress />
         </Box>
@@ -141,7 +127,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
                     top="0"
                   >
                     <Paper elevation={5}>
-                      <Typography style={{ margin: 2, fontSize: 16 }}>
+                      <Typography className="m-0.5 text-base">
                         Hover over or tap a team to see their schedule.
                       </Typography>
                     </Paper>

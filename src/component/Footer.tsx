@@ -8,7 +8,8 @@ const Footer: React.FC = () => {
     <div>
       <AppBar
         position="static"
-        style={{ top: "auto", bottom: 0, backgroundColor: "green" }}
+        className="top-auto bottom-0"
+        style={{ backgroundColor: "green" }}
       >
         <Toolbar>
           <div>

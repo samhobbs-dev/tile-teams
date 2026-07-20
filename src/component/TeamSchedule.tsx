@@ -65,34 +65,26 @@ const TeamSchedule: React.FC<MyProps> = ({ teamId, year }) => {
 
   return (
     <Box width={width}>
-      <Paper elevation={5} sx={{ position: "sticky", top: 0 }}>
+      <Paper elevation={5} className="sticky top-0">
         <Box height={50} width={width}>
           <TeamScheduleHeader teamId={teamId} />
         </Box>
         {loading ? (
-          <Paper
-            style={{
-              backgroundColor: "white",
-              height: logoHeight,
-              width: width,
-            }}
-          >
+          <Paper className="bg-white" style={{ height: logoHeight, width }}>
             <CircularProgress />
           </Paper>
         ) : (
           games.map((game) => (
             <Stack
               key={game.id}
-              style={{ height: logoHeight + 2, width: width }}
+              style={{ height: logoHeight + 2, width }}
             >
               <Grid
                 container
-                padding={1}
+                className="p-2 w-full h-full"
                 alignItems="center"
                 direction="row"
                 alignContent="center"
-                width="100%"
-                height="100%"
               >
                 <Grid container size={6} justifyContent="center">
                   <TeamLogo

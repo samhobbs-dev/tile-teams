@@ -12,8 +12,8 @@ const Header: React.FC = () => {
   return (
     // Position is relative so SchedulePage can stick to its top
     <div>
-      <AppBar position="static" sx={{ backgroundColor: "green" }}>
-        <Toolbar style={{ margin: "0 auto", width: "90%" }}>
+      <AppBar position="static" style={{ backgroundColor: "green" }}>
+        <Toolbar className="w-[90%] mx-auto">
           <Stack
             direction="row"
             alignItems="center"
@@ -22,12 +22,12 @@ const Header: React.FC = () => {
           >
             <a
               href="http://cfbhistory.net"
-              style={{ color: "white", textDecoration: "none" }}
+              className="text-white no-underline"
             >
               <Stack direction="row" spacing={1} alignItems="center">
                 <Image src={footballWhite} alt="logo" height={40} />
                 <Typography
-                  sx={{ fontFamily: "Cambria" }}
+                  className="font-[Cambria]"
                   variant="h4"
                   component="div"
                 >
@@ -36,7 +36,7 @@ const Header: React.FC = () => {
               </Stack>
             </a>
             {width > 650 ? (
-              <Typography sx={{ display: "flex" }} variant="h6">
+              <Typography className="flex" variant="h6">
                 Discover records, logos, and more!
               </Typography>
             ) : (

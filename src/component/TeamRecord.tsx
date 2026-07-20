@@ -42,12 +42,10 @@ const TeamRecord: React.FC<MyProps> = ({
 
   return loading ? (
     <Stack
-      width={width}
-      height={height}
       alignItems="center"
       justifyContent="center"
-      fontSize={fontSize}
-      style={{ background: "white" }}
+      className="bg-white"
+      style={{ width, height, fontSize }}
     >
       <CircularProgress />
     </Stack>
@@ -60,28 +58,15 @@ const TeamRecord: React.FC<MyProps> = ({
           onClose={() => closeModal()}
           sx={{ overflowY: "scroll" }}
         >
-          <Box
-            sx={{
-              width: "100%",
-              background: "white",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-            }}
+          <Box className=
+            "w-full bg-white flex flex-col items-center text-center"
           >
             <CloseIcon
               fontSize="large"
               onClick={closeModal}
-              sx={{
-                position: "sticky",
-                top: 0,
-                alignSelf: "flex-end",
-                cursor: "pointer",
-                m: 1,
-              }}
+              className="sticky top-0 self-end cursor-pointer m-2"
             />
-            <Box px={5} py={2}>
+            <Box className="px-10 py-4">
               <TeamSchedule teamId={team.id} year={record.year} />
             </Box>
           </Box>
@@ -94,34 +79,14 @@ const TeamRecord: React.FC<MyProps> = ({
           dispatch(setScheduleTeamId(record.team.id));
         }}
         onClick={() => setShowModal(true)}
-        sx={{
-          width,
-          height,
-          borderRadius: 1,
-          backgroundColor: "white",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          fontSize,
-        }}
+        className="rounded bg-white flex flex-col items-center"
+        sx={{ width, height, fontSize }}
       >
         {/* Logo area - 66% of height */}
-        <Box
-          sx={{
-            height: "66%",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+        <Box className="h-[66%] flex items-center">
           <TeamLogo teamId={record.team.id} maxHeight={logoHeight} />
         </Box>
-        <Box
-          sx={{
-            height: "34%",
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
+        <Box className="h-[34%] flex items-center">
           {record.totalWins + "-" + record.totalLosses}
           {record.totalTies > 0 ? record.totalTies : ""}
           {" (" + record.totalConfWins + "-" + record.totalConfLosses}

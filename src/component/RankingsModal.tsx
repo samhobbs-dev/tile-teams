@@ -37,16 +37,10 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
   return (
     <div>
       {rankings.length > 0 && (
-        <Paper
-          elevation={3}
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            minWidth: "85px"
-          }}
-        >
-          <Button
-            onClick={openModal}
+        <Paper elevation={3} className="flex justify-center min-w-21.25">
+          <Button 
+            onClick={openModal} 
+            className="text-black normal-case text-base"
             sx={{ color: "black", textTransform: "none", fontSize: 16 }}
           >
             View AP Rankings
@@ -56,23 +50,11 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
       <Modal open={open} onClose={closeModal}>
         <Box
           alignItems="center"
-          sx={{
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "white",
-          }}
+          className="top-0 left-0 w-full h-full bg-white"
         >
           <CloseIcon fontSize="large" onClick={() => closeModal()} />
           <Stack alignItems="center">
-            <Box
-              style={{
-                backgroundColor: "white",
-                height: "25px",
-                width: width + 30,
-              }}
-            >
+            <Box className="bg-white h-6.25" style={{ width: width + 30 }}>
               <Typography>Final AP Rankings</Typography>
             </Box>
             <Grid container justifyContent="center" direction="row">
@@ -81,11 +63,8 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
                   <Stack
                     justifyContent="center"
                     direction="row"
-                    sx={{
-                      backgroundColor: "white",
-                      height: height,
-                      width: width,
-                    }}
+                    className="bg-white"
+                    style={{ height, width }}
                   >
                     <Grid
                       container
