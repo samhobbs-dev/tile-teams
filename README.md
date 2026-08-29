@@ -1,4 +1,4 @@
-# College Football History
+# Tile Teams
 
 This project aims to provide a comprehensive history of college football, including team records, schedules, and rankings. The application is built using React and TypeScript, with data fetched from various APIs and stored in a database.
 
@@ -63,11 +63,11 @@ This project aims to provide a comprehensive history of college football, includ
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/cfb-history-next.git
+   git clone https://github.com/yourusername/tile-teams.git
    ```
 2. Navigate to the project directory:
    ```bash
-   cd cfb-history-next
+   cd tile-teams
    ```
 3. Install dependencies:
    ```bash

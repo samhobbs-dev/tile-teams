@@ -1,6 +1,6 @@
 "use client";
 import { AppBar, Stack, Toolbar, Typography } from "@mui/material";
-import footballWhite from "../image/football-white.png";
+import footballTile from "../image/football-tile.png";
 import useWindowSize from "../hook/useWindowSize";
 import Image from "next/image";
 
@@ -21,17 +21,17 @@ const Header: React.FC = () => {
             width="85vw"
           >
             <a
-              href="http://cfbhistory.net"
+              href="https://tileteams.com"
               className="text-white no-underline"
             >
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Image src={footballWhite} alt="logo" height={40} />
+              <Stack direction="row" spacing={1.5} alignItems="center">
+                <Image src={footballTile} alt="logo" height={40} />
                 <Typography
                   className="font-[Cambria]"
                   variant="h4"
                   component="div"
                 >
-                  CFBHistory
+                  TileTeams
                 </Typography>
               </Stack>
             </a>
