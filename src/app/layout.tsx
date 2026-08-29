@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "CFBHistory - Interactive Archive",
-  description: "Discover records, logos, and more!",
+  title: "TileTeams - Discover college football records, logos, and more!",
+  description: "Discover college football records, logos, and more!",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",
