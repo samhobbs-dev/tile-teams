@@ -25,7 +25,7 @@ const Header: React.FC = () => {
               className="text-white no-underline"
             >
               <Stack direction="row" spacing={1.5} alignItems="center">
-                <Image src={footballTile} alt="logo" height={40} />
+                <Image src={footballTile} alt="TileTeams logo" height={40} />
                 <Typography
                   className="font-[Cambria]"
                   variant="h4"

@@ -119,23 +119,29 @@ const LiveScores: React.FC = () => {
   
     useEffect(() => {
       let ignore = false;
-    
-      fetchLiveScores()
-        .then((data) => {
-          if (!ignore) {
-            setLiveGames(data);
-            setLoading(false);
-          }
-        })
-        .catch((error) => {
-          if (!ignore) {
-            console.error("Error fetching live scores:", error);
-            setLoading(false);
-          }
-        });
-    
+
+      const loadScores = () => {
+        fetchLiveScores()
+          .then((data) => {
+            if (!ignore) {
+              setLiveGames(data);
+              setLoading(false);
+            }
+          })
+          .catch((error) => {
+            if (!ignore) {
+              console.error("Error fetching live scores:", error);
+              setLoading(false);
+            }
+          });
+      };
+
+      loadScores();
+      const intervalId = setInterval(loadScores, 60_000);
+
       return () => {
         ignore = true;
+        clearInterval(intervalId);
       };
     }, []);
   
