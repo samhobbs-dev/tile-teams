@@ -5,7 +5,10 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "TileTeams - Discover college football records, logos, and more!",
+  title: {
+    default: "TileTeams - Discover college football records, logos, and more!",
+    template: "%s | TileTeams",
+  },
   description: "Discover college football records, logos, and more!",
   icons: {
     icon: "/favicon.ico",
