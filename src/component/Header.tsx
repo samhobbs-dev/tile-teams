@@ -37,7 +37,7 @@ const Header: React.FC = () => {
             </a>
             {width > 650 ? (
               <Typography className="flex" variant="h6">
-                Discover records, logos, and more!
+                Discover college records, logos, and more!
               </Typography>
             ) : (
               ""
