@@ -14,6 +14,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   return {
     title: `${displayYear} Season`,
+    description: `College football schedules, standings, and rankings for the ${displayYear} season.`,
+    alternates: {
+      canonical: `/year/${displayYear}`,
+    },
   };
 }
 

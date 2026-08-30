@@ -96,6 +96,9 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       }}
     >
 
+      <Typography variant="h1" className="sr-only">
+        {currentYear} College Football Season
+      </Typography>
       {/* Only display the live scores if you're on the current year */}
       {currentYear == CURRENT_YEAR && <LiveScores/>}
       {(!isDesktopWidth || !isDesktopHeight) && (
