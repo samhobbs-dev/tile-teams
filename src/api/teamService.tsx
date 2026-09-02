@@ -15,18 +15,6 @@ const TeamService = {
       return "An unexpected error occurred";
     }
   },
-  async getTeamByCloseName(teamName: string) {
-    try {
-      const { data: resp } = await axios.get<TeamResponse>(
-        "/api/teamname/" + teamName
-      );
-      return resp;
-    } catch (error) {
-      logError("Failed to fetch team by name", error, { teamName });
-      if (axios.isAxiosError(error)) return error.message;
-      return "An unexpected error occurred";
-    }
-  },
   createTeams(teamResp: TeamResponse[]) {
     const teams: Team[] = [];
     teamResp.forEach((t) => {

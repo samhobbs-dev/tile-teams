@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import TeamService from "@/api/teamService";
-import { TeamResponse } from "@/type/team";
 import { collegeNameMap } from "@/const/collegeNameMap";
 import { logError } from "@/lib/logger";
+import { Team } from "@/type/team";
+import { useAppSelector } from "@/store/hooks";
 
 export interface LiveGameScore {
   id: number;
@@ -35,48 +35,44 @@ interface NCAAGameJSON {
   }[];
 }
 
-const fetchTeamId = async (teamName: string) => {
+// Matches against the team list already loaded into memory (by SchedulePage)
+// instead of hitting /api/teamname per team, which used to mean a couple
+// hundred DB round trips just to load the score bar
+const resolveTeamId = (teamName: string, teams: Team[]): number | null => {
   const result = collegeNameMap.get(teamName);
-  if (result !== undefined) teamName = result;
+  let school = teamName;
+  if (result !== undefined) school = result;
   else {
     // Replace St. with State to fit my db
-    teamName = teamName.replace(/\./g, "");
-    teamName = teamName.replace(/\bSt\b/g, "State");
+    school = school.replace(/\./g, "");
+    school = school.replace(/\bSt\b/g, "State");
   }
-  const teamResponse = (await TeamService.getTeamByCloseName(
-    teamName
-  )) as TeamResponse;
-  if (teamResponse == null) return null;
-  return teamResponse.id;
+  return teams.find((t) => t.school === school)?.id ?? null;
 };
 
-const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
+const fetchLiveScores = async (teams: Team[]): Promise<LiveGameScore[]> => {
   try {
     const res = await fetch("/api/live-scores");
 
     const data: NCAAGameJSON = await res.json();
 
-    const liveScores: LiveGameScore[] = await Promise.all(
-      data.games.map(async ({ game }) => {
-        const homeTeamId = await fetchTeamId(game.home.names.short);
-        const awayTeamId = await fetchTeamId(game.away.names.short);
-        const gameStatus =
-          game.gameState === "pre"
-            ? "Pre-Game"
-            : game.currentPeriod || game.gameState || "Pre-Game";
+    const liveScores: LiveGameScore[] = data.games.map(({ game }) => {
+      const gameStatus =
+        game.gameState === "pre"
+          ? "Pre-Game"
+          : game.currentPeriod || game.gameState || "Pre-Game";
 
-        return {
-          id: Number(game.gameID),
-          homeTeamName: game.home.names.short,
-          awayTeamName: game.away.names.short,
-          homeTeamId, // now this is number | null
-          awayTeamId, // now this is number | null
-          homeTeamScore: Number(game.home.score || 0),
-          awayTeamScore: Number(game.away.score || 0),
-          gameStatus,
-        };
-      })
-    );
+      return {
+        id: Number(game.gameID),
+        homeTeamName: game.home.names.short,
+        awayTeamName: game.away.names.short,
+        homeTeamId: resolveTeamId(game.home.names.short, teams),
+        awayTeamId: resolveTeamId(game.away.names.short, teams),
+        homeTeamScore: Number(game.home.score || 0),
+        awayTeamScore: Number(game.away.score || 0),
+        gameStatus,
+      };
+    });
     // Order games
     const statusOrder: string[] = ["Pre-Game", "FINAL"];
 
@@ -99,14 +95,18 @@ const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
 // Fetches live scores once on mount and polls every minute; shared by the
 // desktop score bar and the mobile live scores modal
 export default function useLiveScores() {
+  const teams = useAppSelector((state) => state.teamList.teamList);
   const [liveGames, setLiveGames] = useState<LiveGameScore[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    // Wait for the team list to load so team ids can actually resolve
+    if (teams.length === 0) return;
+
     let ignore = false;
 
     const loadScores = () => {
-      fetchLiveScores()
+      fetchLiveScores(teams)
         .then((data) => {
           if (!ignore) {
             setLiveGames(data);
@@ -128,7 +128,7 @@ export default function useLiveScores() {
       ignore = true;
       clearInterval(intervalId);
     };
-  }, []);
+  }, [teams]);
 
   return { liveGames, loading };
 }
