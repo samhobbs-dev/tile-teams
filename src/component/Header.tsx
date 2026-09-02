@@ -41,21 +41,21 @@ const Header: React.FC = () => {
                 </Typography>
               </Stack>
             </a>
-            {width > 650 ? (
-              <Typography className="flex" variant="h6">
-                Discover college records, logos, and more!
-              </Typography>
-            ) : (
-              ""
-            )}
-            <IconButton
-              onClick={() => dispatch(toggleDarkMode())}
-              aria-label="Toggle night mode"
-              className="text-white"
-              sx={{ color: "white" }}
-            >
-              {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
-            </IconButton>
+            <Stack direction="row" spacing={1} alignItems="center">
+              {width > 650 && (
+                <Typography className="flex" variant="h6">
+                  Discover college records, logos, and more!
+                </Typography>
+              )}
+              <IconButton
+                onClick={() => dispatch(toggleDarkMode())}
+                aria-label="Toggle night mode"
+                className="text-white"
+                sx={{ color: "white" }}
+              >
+                {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Stack>
           </Stack>
         </Toolbar>
       </AppBar>
