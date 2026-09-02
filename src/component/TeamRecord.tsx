@@ -1,5 +1,5 @@
 "use client";
- 
+
 import { Box, CircularProgress, Modal, Paper, Stack } from "@mui/material";
 import { useAppDispatch } from "../store/hooks";
 import { setScheduleTeamId } from "../store/currentScheduleSlice";
@@ -67,7 +67,7 @@ const TeamRecord: React.FC<MyProps> = ({
               className="sticky top-0 self-end cursor-pointer m-2"
             />
             <Box className="px-10 py-4">
-              <TeamSchedule teamId={team.id} year={record.year} />
+              <TeamSchedule teamId={team.id} />
             </Box>
           </Box>
         </Modal>
