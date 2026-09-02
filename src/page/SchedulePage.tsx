@@ -37,6 +37,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   const isDesktopHeight = windowSize.height >= desktopHeight;
 
   const teamId = useAppSelector((state) => state.schedule.teamId);
+  const isDarkMode = useAppSelector((state) => state.darkMode.isDarkMode);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -93,11 +94,15 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       className="pt-2 pb-16 w-full min-h-screen
         bg-cover bg-center bg-repeat-y bg-fixed"
       style={{
-        backgroundImage:
-        `linear-gradient(rgba(211, 211, 211, 0.5),
-          rgba(211, 211, 211, 0.5)),
-          url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
-        `
+        backgroundImage: isDarkMode
+          ? `linear-gradient(rgba(20, 20, 20, 0.8),
+              rgba(20, 20, 20, 0.8)),
+              url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
+            `
+          : `linear-gradient(rgba(211, 211, 211, 0.5),
+              rgba(211, 211, 211, 0.5)),
+              url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
+            `
       }}
     >
 

@@ -38,10 +38,9 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
     <div>
       {rankings.length > 0 && (
         <Paper elevation={3} className="flex justify-center min-w-21.25">
-          <Button 
-            onClick={openModal} 
-            className="text-black normal-case text-base"
-            sx={{ color: "black", textTransform: "none", fontSize: 16 }}
+          <Button
+            onClick={openModal}
+            sx={{ color: "text.primary", textTransform: "none", fontSize: 16 }}
           >
             View AP Rankings
           </Button>
@@ -50,11 +49,12 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
       <Modal open={open} onClose={closeModal}>
         <Box
           alignItems="center"
-          className="top-0 left-0 w-full h-full bg-white"
+          className="top-0 left-0 w-full h-full"
+          sx={{ bgcolor: "background.default", color: "text.primary" }}
         >
           <CloseIcon fontSize="large" onClick={() => closeModal()} />
           <Stack alignItems="center">
-            <Box className="bg-white h-6.25" style={{ width: width + 30 }}>
+            <Box className="h-6.25" style={{ width: width + 30 }}>
               <Typography>Final AP Rankings</Typography>
             </Box>
             <Grid container justifyContent="center" direction="row">
@@ -63,7 +63,6 @@ const RankingsModal: React.FC<MyProps> = ({ year }) => {
                   <Stack
                     justifyContent="center"
                     direction="row"
-                    className="bg-white"
                     style={{ height, width }}
                   >
                     <Grid

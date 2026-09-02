@@ -50,7 +50,6 @@ const LiveScores: React.FC = () => {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'lightgray',
           width: '50px'
         }}>
           <Typography

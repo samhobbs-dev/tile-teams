@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid2";
 import { Conference } from "../type/conference";
 import TeamRecord from "./TeamRecord";
 import useWindowSize from "../hook/useWindowSize";
+import { useAppSelector } from "../store/hooks";
 import { zoomWidth } from "../const/const";
 
 interface MyProps {
@@ -16,6 +17,7 @@ interface MyProps {
 const ConfStandings: React.FC<MyProps> = ({ conference, loading }) => {
   const windowSize = useWindowSize();
   const isZoomWidth = windowSize.width >= zoomWidth;
+  const isDarkMode = useAppSelector((state) => state.darkMode.isDarkMode);
 
   const height = isZoomWidth ? 120 : 70;
   const width = isZoomWidth ? 120 : 70;
@@ -37,7 +39,7 @@ const ConfStandings: React.FC<MyProps> = ({ conference, loading }) => {
         elevation={5}
         sx={{
           padding: "5px 15px",
-          background: "lightgray",
+          background: isDarkMode ? "#424242" : "lightgray",
         }}
       >
         <b>{conference.name}</b>
@@ -62,7 +64,7 @@ const ConfStandings: React.FC<MyProps> = ({ conference, loading }) => {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  backgroundColor: "#f5f5f5",
+                  backgroundColor: isDarkMode ? "#333" : "#f5f5f5",
                 }}
               >
                 <Typography

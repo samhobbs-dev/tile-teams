@@ -44,7 +44,7 @@ const TeamRecord: React.FC<MyProps> = ({
     <Stack
       alignItems="center"
       justifyContent="center"
-      className="bg-white"
+      sx={{ bgcolor: "background.paper" }}
       style={{ width, height, fontSize }}
     >
       <CircularProgress />
@@ -58,8 +58,9 @@ const TeamRecord: React.FC<MyProps> = ({
           onClose={() => closeModal()}
           sx={{ overflowY: "scroll" }}
         >
-          <Box className=
-            "w-full bg-white flex flex-col items-center text-center"
+          <Box
+            className="w-full flex flex-col items-center text-center"
+            sx={{ bgcolor: "background.default", color: "text.primary" }}
           >
             <CloseIcon
               fontSize="large"
@@ -79,7 +80,7 @@ const TeamRecord: React.FC<MyProps> = ({
           dispatch(setScheduleTeamId(record.team.id));
         }}
         onClick={() => setShowModal(true)}
-        className="rounded bg-white flex flex-col items-center"
+        className="rounded flex flex-col items-center"
         sx={{ width, height, fontSize }}
       >
         {/* Logo area - 66% of height */}

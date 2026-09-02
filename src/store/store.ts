@@ -5,6 +5,7 @@ import scheduleReducer from "./currentScheduleSlice";
 import currentLogoReducer from "./currentLogoSlice";
 import scheduleListReducer from "./scheduleListSlice";
 import teamListReducer from "./teamListSlice";
+import darkModeReducer from "./darkModeSlice";
 
 export const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
     teamList: teamListReducer,
     currentLogo: currentLogoReducer,
     scheduleList: scheduleListReducer,
+    darkMode: darkModeReducer,
   },
 });
 
