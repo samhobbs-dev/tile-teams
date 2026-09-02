@@ -4,7 +4,7 @@ import React from "react";
 import { useAppSelector } from "../store/hooks";
 import Image from 'next/image';
 
-const USE_COMPRESS: boolean = true;
+const USE_COMPRESS: boolean = false;
 const S3_LINK: string =
   "https://cfbh-logos.s3.us-east-2.amazonaws.com/" +
   (USE_COMPRESS ? "compress/" : "");

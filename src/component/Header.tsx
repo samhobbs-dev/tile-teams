@@ -1,13 +1,19 @@
 "use client";
-import { AppBar, Stack, Toolbar, Typography } from "@mui/material";
+import { AppBar, IconButton, Stack, Toolbar, Typography } from "@mui/material";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
 import footballTile from "../image/football-tile.png";
 import useWindowSize from "../hook/useWindowSize";
 import Image from "next/image";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { toggleDarkMode } from "../store/darkModeSlice";
 
 // Header containing site logo & motto
 const Header: React.FC = () => {
   const windowSize = useWindowSize();
   const width = windowSize.width;
+  const dispatch = useAppDispatch();
+  const isDarkMode = useAppSelector((state) => state.darkMode.isDarkMode);
 
   return (
     // Position is relative so SchedulePage can stick to its top
@@ -35,13 +41,21 @@ const Header: React.FC = () => {
                 </Typography>
               </Stack>
             </a>
-            {width > 650 ? (
-              <Typography className="flex" variant="h6">
-                Discover college records, logos, and more!
-              </Typography>
-            ) : (
-              ""
-            )}
+            <Stack direction="row" spacing={4} alignItems="center">
+              {width > 800 && (
+                <Typography className="flex" variant="h6">
+                  Discover college records, logos, and more!
+                </Typography>
+              )}
+              <IconButton
+                onClick={() => dispatch(toggleDarkMode())}
+                aria-label="Toggle night mode"
+                className="text-white"
+                sx={{ color: "white" }}
+              >
+                {isDarkMode ? <Brightness7Icon /> : <Brightness4Icon />}
+              </IconButton>
+            </Stack>
           </Stack>
         </Toolbar>
       </AppBar>

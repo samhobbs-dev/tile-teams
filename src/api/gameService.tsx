@@ -2,6 +2,7 @@ import axios from "axios";
 import GameStatus from "../type/gameStatus";
 import TeamGame, { GameResponse } from "../type/teamGame";
 import Schedule from "../type/schedule";
+import { logError } from "../lib/logger";
 
 const GameService = {
   createScheduleGame(r: GameResponse, teamId: number) {
@@ -91,13 +92,9 @@ const GameService = {
       });
       return schedules;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error message: ", error.message);
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
+      logError("Failed to fetch team schedules", error, { year });
+      if (axios.isAxiosError(error)) return error.message;
+      return "An unexpected error occurred";
     }
   },
 };

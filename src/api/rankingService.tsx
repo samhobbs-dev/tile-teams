@@ -1,5 +1,6 @@
 import axios from "axios";
 import Ranking, { RankingResponse } from "@/type/ranking";
+import { logError } from "@/lib/logger";
 
 const RankingService = {
   async getFinalAPRankingsByYear(year: number) {
@@ -13,13 +14,9 @@ const RankingService = {
       });
       return rankings;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error message: ", error.message);
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
+      logError("Failed to fetch AP rankings", error, { year });
+      if (axios.isAxiosError(error)) return error.message;
+      return "An unexpected error occurred";
     }
   },
   createRanking(r: RankingResponse) {

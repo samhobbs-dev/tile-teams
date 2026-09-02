@@ -15,6 +15,7 @@ import ArrowRightIcon from "@mui/icons-material/ArrowRight";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { setUseCurrentLogo } from "../store/currentLogoSlice";
 import RankingsModal from "./RankingsModal";
+import LiveScoresModal from "./LiveScoresModal";
 import useWindowSize from "../hook/useWindowSize";
 import { CURRENT_YEAR, FIRST_YEAR, desktopWidth } from "../const/const";
 import { SelectChangeEvent } from "@mui/material";
@@ -62,9 +63,14 @@ const ConfYear: React.FC<MyProps> = ({
       position="sticky"
       top="0"
     >
-      {/* If on mobile site, option to pull up AP rankings menu */}
+      {/* If on mobile site, option to pull up AP rankings & live scores */}
       <Box width="20%">
-        {!isDesktopWidth && <RankingsModal year={year} />}
+        {!isDesktopWidth && (
+          <Stack spacing={1}>
+            <RankingsModal year={year} />
+            {year === CURRENT_YEAR && <LiveScoresModal />}
+          </Stack>
+        )}
       </Box>
       <Stack direction="row" justifyContent="center" width="60%">
         {/* Move back a year (doesn't appear if it's the first year)*/}

@@ -1,19 +1,21 @@
 "use client";
 
-import { Box, CircularProgress, Paper, Stack, Typography } 
+import { Box, CircularProgress, Paper, Stack, Typography }
 from "@mui/material";
 import ConfGrid from "../component/ConfGrid";
 import ConfYear from "../component/ConfYear";
 import TeamSchedule from "../component/TeamSchedule";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { NO_TEAM } from "../store/currentScheduleSlice";
+import { setTeamSchedules } from "../store/scheduleListSlice";
 import Rankings from "../component/Rankings";
 import useWindowSize from "../hook/useWindowSize";
 import { useEffect, useState } from "react";
 import TeamService from "../api/teamService";
+import GameService from "../api/gameService";
 import { setTeamList } from "../store/teamListSlice";
 import { Team } from "../type/team";
-import { CURRENT_YEAR, FIRST_YEAR, NEXT_YEAR, desktopHeight, desktopWidth } 
+import { CURRENT_YEAR, FIRST_YEAR, NEXT_YEAR, desktopHeight, desktopWidth }
 from "../const/const";
 
 import { useRouter } from "next/navigation";
@@ -21,6 +23,7 @@ import { Conference } from "@/type/conference";
 import RecordService from "@/api/recordService";
 import RankingService from "@/api/rankingService";
 import Ranking from "@/type/ranking";
+import Schedule from "@/type/schedule";
 import LiveScores from "@/component/LiveScores";
 
 interface MyProps {
@@ -34,6 +37,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   const isDesktopHeight = windowSize.height >= desktopHeight;
 
   const teamId = useAppSelector((state) => state.schedule.teamId);
+  const isDarkMode = useAppSelector((state) => state.darkMode.isDarkMode);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -58,12 +62,13 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   useEffect(() => {
     if (isValidYear) {
       let ignore = false;
-  
+
       Promise.all([
         RecordService.getAllConferenceStandings(currentYear),
         TeamService.getAllTeamsInYear(currentYear),
         RankingService.getFinalAPRankingsByYear(currentYear),
-      ]).then(([confRes, teamRes, rankRes]) => {
+        GameService.getAllTeamSchedules(currentYear),
+      ]).then(([confRes, teamRes, rankRes, scheduleRes]) => {
         if (!ignore) {
           const sortedConfs = (confRes as Conference[]).sort((a, b) =>
             a.name.localeCompare(b.name)
@@ -71,10 +76,11 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
           setConferences(sortedConfs);
           dispatch(setTeamList(teamRes as Team[]));
           setRankings(rankRes as Ranking[]);
+          dispatch(setTeamSchedules(scheduleRes as Schedule[]));
           setLoading(false);
         }
       });
-  
+
       return () => {
         ignore = true;
       };
@@ -85,24 +91,31 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       direction="column"
       alignItems="center"
       spacing={1}
-      className="pt-2 pb-16 w-full min-h-screen 
+      className="pt-2 pb-16 w-full min-h-screen
         bg-cover bg-center bg-repeat-y bg-fixed"
       style={{
-        backgroundImage:
-        `linear-gradient(rgba(211, 211, 211, 0.5),
-          rgba(211, 211, 211, 0.5)),
-          url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
-        `
+        backgroundImage: isDarkMode
+          ? `linear-gradient(rgba(20, 20, 20, 0.8),
+              rgba(20, 20, 20, 0.8)),
+              url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
+            `
+          : `linear-gradient(rgba(211, 211, 211, 0.5),
+              rgba(211, 211, 211, 0.5)),
+              url('https://cfbh-logos.s3.us-east-2.amazonaws.com/pennstate.jpg')
+            `
       }}
     >
 
       <Typography variant="h1" className="sr-only">
         {currentYear} College Football Season
       </Typography>
-      {/* Only display the live scores if you're on the current year */}
-      {currentYear == CURRENT_YEAR && <LiveScores/>}
+      {/* On desktop, show the live scores bar inline; on mobile it's a
+          separate modal (see ConfYear) to avoid crowding the page */}
+      {currentYear == CURRENT_YEAR && isDesktopWidth && <LiveScores/>}
       {(!isDesktopWidth || !isDesktopHeight) && (
-        <Typography>Tap a team to view its schedule.</Typography>
+        <Typography sx={{ color: "text.primary" }}>
+          Tap a team to view its schedule.
+        </Typography>
       )}
       <ConfYear
         defaultYear={currentYear}
@@ -120,10 +133,10 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
           {isDesktopWidth && isDesktopHeight && (
             <Box width="20%" display="flex" justifyContent="center">
               {isTeam ? (
-                <TeamSchedule teamId={teamId} year={currentYear} />
+                <TeamSchedule teamId={teamId} />
               ) : (
                 <Stack justifyContent="space-between">
-                  <Stack 
+                  <Stack
                     position="sticky"
                     height="105px"
                     width="180px"
@@ -140,8 +153,8 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
             </Box>
           )}
           <Box
-            width={"60%"}
-            minWidth={300}
+            width={isDesktopWidth ? "60%" : "95%"}
+            minWidth={isDesktopWidth ? 300 : undefined}
             display="flex"
             justifyContent="center"
           >

@@ -2,6 +2,7 @@ import { TeamResponse } from "@/type/team";
 import { Prisma } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { logError } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -66,7 +67,7 @@ export async function GET(
       return NextResponse.json({ error: "Teams not found" }, { status: 404 });
     }
   } catch (error) {
-    console.error("Error fetching teams for year:", year);
+    logError("Error fetching teams for year", error, { year });
 
     return NextResponse.json(
       {
