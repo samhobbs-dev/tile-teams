@@ -1,187 +1,51 @@
 "use client";
 
- 
-import { 
-  Box, CircularProgress, IconButton, Paper, Stack, Typography
-} from "@mui/material";
-import React, { useEffect, useState, useRef } from "react";
-// Assuming TeamLogo is available in the component directory
-import TeamLogo from "./TeamLogo";
+import { Box, CircularProgress, IconButton, Paper, Stack, Typography } from "@mui/material";
+import { useRef } from "react";
 import ArrowLeftIcon from "@mui/icons-material/ArrowLeft";
 import ArrowRightIcon from "@mui/icons-material/ArrowRight";
-import TeamService from "@/api/teamService";
-import { TeamResponse } from "@/type/team";
-import { collegeNameMap } from "@/const/collegeNameMap";
-import Grid from "@mui/material/Grid2";
-
-interface LiveGameScore {
-  id: number;
-  homeTeamName: string;   // use string since API uses strings like "JAX ST"
-  awayTeamName: string;
-  homeTeamId: number | null;  // nulls if the checking the id in the db failed
-  awayTeamId: number | null;
-  homeTeamScore: number;
-  awayTeamScore: number;
-  gameStatus: string; // e.g., 'Q1 5:30', 'Halftime', 'Final'
-}
-interface NCAAGameJSON {
-  games: {
-    game: {
-      gameID: string;
-      home: {
-        names: { char6: string; short: string; seo: string; full: string };
-        score: string;
-      };
-      away: {
-        names: { char6: string; short: string; seo: string; full: string };
-        score: string;
-      };
-      currentPeriod: string; // "FINAL", "3RD", etc.
-      gameState: string;     // "live", "pre", "final"
-    };
-  }[];
-}
+import LiveGameCard from "./LiveGameCard";
+import useLiveScores from "../hook/useLiveScores";
 
 // Constants for styling
 const gameBoxSize = 100; // To make the game box a square
-const logoHeight = gameBoxSize / 3; // Dynamic sizing
-const scoreFontSize = gameBoxSize / 5;
-const statusFontSize = gameBoxSize / (100 / 12);
 const arrowWidth = 40;
 const scrollAmount = gameBoxSize * 5 + 30; // Scroll by ~3 boxes + spacing
 
-// Placeholder function for API call - to be replaced by the user
-const fetchLiveScores = async (): Promise<LiveGameScore[]> => {
-  try {
-    const res = await fetch("/api/live-scores");
-
-    const data: NCAAGameJSON = await res.json();
-
-    const liveScores: LiveGameScore[] = await Promise.all(
-      data.games.map(async ({ game }) => {
-        const homeTeamId = await fetchTeamId(game.home.names.short);
-        const awayTeamId = await fetchTeamId(game.away.names.short);
-        const gameStatus =
-          game.gameState === "pre"
-            ? "Pre-Game"
-            : game.currentPeriod || game.gameState || "Pre-Game";
-
-        return {
-          id: Number(game.gameID),
-          homeTeamName: game.home.names.short,
-          awayTeamName: game.away.names.short,
-          homeTeamId,   // now this is number | null
-          awayTeamId,   // now this is number | null
-          homeTeamScore: Number(game.home.score || 0),
-          awayTeamScore: Number(game.away.score || 0),
-          gameStatus,
-        };
-      })
-    );
-    // Order games
-    const statusOrder: string[] = ["Pre-Game", "FINAL"];
-
-    const getPriority = (status: string): number => {
-      const index = statusOrder.indexOf(status);
-      return index === -1 ? 0 : index + 1; // anything else gets 0
-    };
-    
-    const orderedGames: LiveGameScore[] = [...liveScores].sort(
-      (a, b) => getPriority(a.gameStatus) - getPriority(b.gameStatus)
-    );
-
-    return orderedGames;
-  } catch (err) {
-    console.error("Error fetching live scores:", err);
-    return [];
-  }
-};
-
-const fetchTeamId = async (teamName: string) => {
-  const result = collegeNameMap.get(teamName);
-  if (result !== undefined)
-    teamName = result;
-  else {
-    // Replace St. with State to fit my db  
-    teamName = teamName.replace(/\./g, "");
-    teamName = teamName.replace(/\bSt\b/g, "State");
-  }
-  const teamResponse = await TeamService.getTeamByCloseName(teamName) as TeamResponse;
-  if (teamResponse == null)
-    return null;
-  return teamResponse.id;
-}
-
 const LiveScores: React.FC = () => {
-    const [liveGames, setLiveGames] = useState<LiveGameScore[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const gamesContainerRef = useRef<HTMLDivElement>(null);
-  
-    useEffect(() => {
-      let ignore = false;
+  const { liveGames, loading } = useLiveScores();
+  const gamesContainerRef = useRef<HTMLDivElement>(null);
 
-      const loadScores = () => {
-        fetchLiveScores()
-          .then((data) => {
-            if (!ignore) {
-              setLiveGames(data);
-              setLoading(false);
-            }
-          })
-          .catch((error) => {
-            if (!ignore) {
-              console.error("Error fetching live scores:", error);
-              setLoading(false);
-            }
-          });
-      };
+  // Scroll functions for the arrows
+  const scrollLeft = () => {
+    if (gamesContainerRef.current) {
+      // Moves the scroll position to the left by the calculated amount
+      gamesContainerRef.current.scrollBy(
+        { left: -scrollAmount, behavior: 'smooth' }
+      );
+    }
+  };
 
-      loadScores();
-      const intervalId = setInterval(loadScores, 60_000);
+  const scrollRight = () => {
+    if (gamesContainerRef.current) {
+      // Moves the scroll position to the right by the calculated amount
+      gamesContainerRef.current.scrollBy(
+        { left: scrollAmount, behavior: 'smooth' }
+      );
+    }
+  };
 
-      return () => {
-        ignore = true;
-        clearInterval(intervalId);
-      };
-    }, []);
-  
-    // Determine the color of the game status (e.g., in-progress vs final)
-    const getStatusColor = (status: string) => {
-      if (status.toLowerCase().includes("final")) return "red";
-      if (status.toLowerCase().includes("pre-game")) return "gray";
-      return "green";
-    };
-  
-    // Scroll functions for the arrows
-    const scrollLeft = () => {
-      if (gamesContainerRef.current) {
-        // Moves the scroll position to the left by the calculated amount
-        gamesContainerRef.current.scrollBy(
-          { left: -scrollAmount, behavior: 'smooth' }
-        );
-      }
-    };
-    
-    const scrollRight = () => {
-      if (gamesContainerRef.current) {
-        // Moves the scroll position to the right by the calculated amount
-        gamesContainerRef.current.scrollBy(
-          { left: scrollAmount, behavior: 'smooth' }
-        );
-      }
-    };
-  
-    return (
-    <Stack 
-      direction="row" 
-      alignItems="center" 
+  return (
+    <Stack
+      direction="row"
+      alignItems="center"
       spacing={1}
       sx={{ width: "90%", overflow: "hidden" }}
     >
       {/* Sideways Title Box */}
       <Box flexShrink={0}>
-        <Paper elevation={5} sx={{ 
-          p: 1, 
+        <Paper elevation={5} sx={{
+          p: 1,
           height: gameBoxSize * 1.2,
           display: 'flex',
           alignItems: 'center',
@@ -189,11 +53,11 @@ const LiveScores: React.FC = () => {
           background: 'lightgray',
           width: '50px'
         }}>
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              transform: 'rotate(-90deg)', 
-              transformOrigin: 'center', 
+          <Typography
+            variant="h6"
+            sx={{
+              transform: 'rotate(-90deg)',
+              transformOrigin: 'center',
               whiteSpace: 'nowrap',
               fontWeight: 'bold',
             }}
@@ -202,17 +66,17 @@ const LiveScores: React.FC = () => {
           </Typography>
         </Paper>
       </Box>
-    {/* Left Arrow */}
-    <Box width={arrowWidth} flexShrink={0}>
-    <IconButton onClick={scrollLeft}>
-        <ArrowLeftIcon fontSize="large" />
-    </IconButton>
-    </Box>
+      {/* Left Arrow */}
+      <Box width={arrowWidth} flexShrink={0}>
+        <IconButton onClick={scrollLeft}>
+          <ArrowLeftIcon fontSize="large" />
+        </IconButton>
+      </Box>
 
-    {/* Scrollable Container */}
-    <Box
-      ref={gamesContainerRef}
-      sx={{
+      {/* Scrollable Container */}
+      <Box
+        ref={gamesContainerRef}
+        sx={{
           overflowX: "auto",
           p: 1,
           flexGrow: 1,
@@ -224,132 +88,37 @@ const LiveScores: React.FC = () => {
           '&::-webkit-scrollbar': { display: 'none' },
           msOverflowStyle: 'none',
           scrollbarWidth: 'none',
-      }}
-    >
-    {loading ? (
-        <Box 
-          sx={{ 
-            minWidth: gameBoxSize,
-            height: gameBoxSize,
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          <CircularProgress />
-        </Box>
-    ) : (
-        <Stack direction="row" spacing={1} flexWrap="nowrap">
-        {liveGames.map((game) => (
-          <Paper
-            key={game.id}
-            elevation={3}
+        }}
+      >
+        {loading ? (
+          <Box
             sx={{
-              width: gameBoxSize,
+              minWidth: gameBoxSize,
               height: gameBoxSize,
-              p: 1,
-              backgroundColor: 'white',
               display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              flexShrink: 0,
+              justifyContent: 'center',
+              alignItems: 'center'
             }}
           >
-            <Grid
-              container
-              rowSpacing={.5}
-              columnSpacing={1}
-              display={"flex"}
-              alignItems={"center"}
-              justifyContent={"center"}
-            >
-              {/* Away team icon*/}
-              <Grid
-                size={6}
-                height="30px" // Also shifts the score
-                display={"flex"}
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                {game.awayTeamId ? (
-                    <TeamLogo
-                      teamId={game.awayTeamId}
-                      maxHeight={logoHeight}
-                      fontSize={statusFontSize}
-                    />
-                  ) : (
-                    game.awayTeamName
-                  )}
-              </Grid>
-              {/* Away team score */}
-              <Grid 
-                size={6}
-                display={"flex"}
-                justifyContent={"center"}
-              >
-                <Typography variant="h6" sx={{ fontSize: scoreFontSize }}>
-                  {game.awayTeamScore}
-                </Typography>
-              </Grid>
-              {/* Home team icon*/}
-              <Grid
-                size={6}
-                display={"flex"}
-                height="30px" // Also shifts the score
-                justifyContent={"center"}
-                alignItems={"center"}
-              >
-                {game.homeTeamId ? (
-                  <TeamLogo
-                    teamId={game.homeTeamId}
-                    maxHeight={logoHeight}
-                    fontSize={statusFontSize}
-                  />
-                ) : (
-                  game.awayTeamName
-                )}
-              </Grid>
-              {/* Home team score */}
-              <Grid
-                size={6}
-                display={"flex"}
-                justifyContent={"center"}
-              >
-                <Typography variant="h6" sx={{ fontSize: scoreFontSize }}>
-                    {game.homeTeamScore}
-                  </Typography>
-              </Grid>
-              <Grid
-                size={6}
-              >
-                <Typography
-                  align="center"
-                  variant="subtitle2"
-                  sx={{
-                    color: getStatusColor(game.gameStatus),
-                    fontWeight: 'bold',
-                    fontSize: statusFontSize,
-                  }}
-                >
-                  {game.gameStatus}
-                </Typography>
-              </Grid>
-            </Grid>            
-          </Paper>
-        ))}
-        </Stack>
-    )}
-    </Box>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <Stack direction="row" spacing={1} flexWrap="nowrap">
+            {liveGames.map((game) => (
+              <LiveGameCard key={game.id} game={game} size={gameBoxSize} />
+            ))}
+          </Stack>
+        )}
+      </Box>
 
-    {/* Right Arrow */}
-    <Box width={arrowWidth} flexShrink={0}>
-    <IconButton onClick={scrollRight}>
-        <ArrowRightIcon fontSize="large" />
-    </IconButton>
-    </Box>
+      {/* Right Arrow */}
+      <Box width={arrowWidth} flexShrink={0}>
+        <IconButton onClick={scrollRight}>
+          <ArrowRightIcon fontSize="large" />
+        </IconButton>
+      </Box>
     </Stack>
+  );
+};
 
-    );
-  };
-  
-  export default LiveScores;
+export default LiveScores;

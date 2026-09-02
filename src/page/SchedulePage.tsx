@@ -99,8 +99,9 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       <Typography variant="h1" className="sr-only">
         {currentYear} College Football Season
       </Typography>
-      {/* Only display the live scores if you're on the current year */}
-      {currentYear == CURRENT_YEAR && <LiveScores/>}
+      {/* On desktop, show the live scores bar inline; on mobile it's a
+          separate modal (see ConfYear) to avoid crowding the page */}
+      {currentYear == CURRENT_YEAR && isDesktopWidth && <LiveScores/>}
       {(!isDesktopWidth || !isDesktopHeight) && (
         <Typography>Tap a team to view its schedule.</Typography>
       )}
