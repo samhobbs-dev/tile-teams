@@ -1,6 +1,7 @@
 import axios from "axios";
 import { ConfDivision, Conference } from "../type/conference";
 import { RecordResponse, SeasonRecord } from "../type/record";
+import { logError } from "../lib/logger";
 
 // TODO strict typing & async requests?
 const RecordService = {
@@ -86,13 +87,9 @@ const RecordService = {
       });
       return conferenceList;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error message: ", error.message);
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
+      logError("Failed to fetch conference standings", error, { year });
+      if (axios.isAxiosError(error)) return error.message;
+      return "An unexpected error occurred";
     }
   },
 };

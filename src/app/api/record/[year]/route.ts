@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { logError } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -24,7 +25,7 @@ export async function GET(
       );
     }
   } catch (error) {
-    console.error("Error fetching records for year:", year);
+    logError("Error fetching records for year", error, { year });
 
     return NextResponse.json(
       {

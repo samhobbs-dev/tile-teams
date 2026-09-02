@@ -1,6 +1,7 @@
 import { GameResponse } from "@/type/teamGame";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { logError } from "@/lib/logger";
 
 export async function GET(
   request: NextRequest,
@@ -20,7 +21,7 @@ export async function GET(
       return NextResponse.json({ error: "Games not found" }, { status: 404 });
     }
   } catch (error) {
-    console.error("Error fetching games for year:", year);
+    logError("Error fetching games for year", error, { year });
 
     return NextResponse.json(
       {

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { logError } from "@/lib/logger";
 
 export async function GET() {
   try {
@@ -14,8 +15,8 @@ export async function GET() {
         "Access-Control-Allow-Origin": "*",
       },
     });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    logError("Failed to fetch live scores", error);
     return NextResponse.json({ error: "Failed to fetch scores" }, { status: 500 });
   }
 }

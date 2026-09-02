@@ -1,5 +1,6 @@
 import axios from "axios";
 import { Team, TeamResponse } from "../type/team";
+import { logError } from "../lib/logger";
 
 const TeamService = {
   async getAllTeamsInYear(year: number) {
@@ -9,13 +10,9 @@ const TeamService = {
       );
       return this.createTeams(resp);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error message: ", error.message);
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
+      logError("Failed to fetch teams for year", error, { year });
+      if (axios.isAxiosError(error)) return error.message;
+      return "An unexpected error occurred";
     }
   },
   async getTeamByCloseName(teamName: string) {
@@ -25,13 +22,9 @@ const TeamService = {
       );
       return resp;
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.log("error message: ", error.message);
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
+      logError("Failed to fetch team by name", error, { teamName });
+      if (axios.isAxiosError(error)) return error.message;
+      return "An unexpected error occurred";
     }
   },
   createTeams(teamResp: TeamResponse[]) {
