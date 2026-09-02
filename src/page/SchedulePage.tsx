@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, CircularProgress, Paper, Stack, Typography } 
+import { Box, CircularProgress, Paper, Stack, Typography }
 from "@mui/material";
 import ConfGrid from "../component/ConfGrid";
 import ConfYear from "../component/ConfYear";
@@ -13,7 +13,7 @@ import { useEffect, useState } from "react";
 import TeamService from "../api/teamService";
 import { setTeamList } from "../store/teamListSlice";
 import { Team } from "../type/team";
-import { CURRENT_YEAR, FIRST_YEAR, NEXT_YEAR, desktopHeight, desktopWidth } 
+import { CURRENT_YEAR, FIRST_YEAR, NEXT_YEAR, desktopHeight, desktopWidth }
 from "../const/const";
 
 import { useRouter } from "next/navigation";
@@ -58,7 +58,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
   useEffect(() => {
     if (isValidYear) {
       let ignore = false;
-  
+
       Promise.all([
         RecordService.getAllConferenceStandings(currentYear),
         TeamService.getAllTeamsInYear(currentYear),
@@ -74,7 +74,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
           setLoading(false);
         }
       });
-  
+
       return () => {
         ignore = true;
       };
@@ -85,7 +85,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
       direction="column"
       alignItems="center"
       spacing={1}
-      className="pt-2 pb-16 w-full min-h-screen 
+      className="pt-2 pb-16 w-full min-h-screen
         bg-cover bg-center bg-repeat-y bg-fixed"
       style={{
         backgroundImage:
@@ -123,7 +123,7 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
                 <TeamSchedule teamId={teamId} year={currentYear} />
               ) : (
                 <Stack justifyContent="space-between">
-                  <Stack 
+                  <Stack
                     position="sticky"
                     height="105px"
                     width="180px"
@@ -140,8 +140,8 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
             </Box>
           )}
           <Box
-            width={"60%"}
-            minWidth={300}
+            width={isDesktopWidth ? "60%" : "95%"}
+            minWidth={isDesktopWidth ? 300 : undefined}
             display="flex"
             justifyContent="center"
           >
