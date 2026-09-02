@@ -41,8 +41,8 @@ const Header: React.FC = () => {
                 </Typography>
               </Stack>
             </a>
-            <Stack direction="row" spacing={1} alignItems="center">
-              {width > 650 && (
+            <Stack direction="row" spacing={4} alignItems="center">
+              {width > 800 && (
                 <Typography className="flex" variant="h6">
                   Discover college records, logos, and more!
                 </Typography>
