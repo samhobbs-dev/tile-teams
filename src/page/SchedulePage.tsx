@@ -113,7 +113,9 @@ const SchedulePage: React.FC<MyProps> = ({ year }) => {
           separate modal (see ConfYear) to avoid crowding the page */}
       {currentYear == CURRENT_YEAR && isDesktopWidth && <LiveScores/>}
       {(!isDesktopWidth || !isDesktopHeight) && (
-        <Typography>Tap a team to view its schedule.</Typography>
+        <Typography sx={{ color: "text.primary" }}>
+          Tap a team to view its schedule.
+        </Typography>
       )}
       <ConfYear
         defaultYear={currentYear}
