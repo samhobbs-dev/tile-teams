@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import { useAppSelector } from "../store/hooks";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { setDarkMode } from "../store/darkModeSlice";
 
 interface MyProps {
   children: React.ReactNode;
@@ -12,6 +13,16 @@ interface MyProps {
 // Paper/Typography's default colors flip between light and dark automatically
 const ThemeRegistry: React.FC<MyProps> = ({ children }) => {
   const isDarkMode = useAppSelector((state) => state.darkMode.isDarkMode);
+  const dispatch = useAppDispatch();
+
+  // Default to the OS/browser color scheme on first load. Runs client-side
+  // only (after the deterministic light-mode SSR render) to avoid a
+  // hydration mismatch; the header toggle can still override it afterward
+  useEffect(() => {
+    if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+      dispatch(setDarkMode(true));
+    }
+  }, [dispatch]);
 
   const theme = useMemo(
     () =>
